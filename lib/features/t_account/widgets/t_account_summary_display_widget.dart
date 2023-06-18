@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../journal/models/entry.dart';
 import '../../journal/models/transaction.dart';
+
+import '../../../providers/transactions.dart';
 
 class TAccountSummaryDisplayWidget extends StatelessWidget {
   final String accountId;
-  final List<Transaction> transactionsList;
-  const TAccountSummaryDisplayWidget(this.accountId, this.transactionsList,
-      {Key? key})
+
+  const TAccountSummaryDisplayWidget(this.accountId, {Key? key})
       : super(key: key);
 
   List<Map<String, dynamic>> _getTransactionsSummaryOfAccount(
@@ -19,7 +22,7 @@ class TAccountSummaryDisplayWidget extends StatelessWidget {
       Map<String, dynamic> transactionSummary = {};
 
       final String accountIdOfDebitEntry =
-           transaction.debitEntry?.accountDetail?.id ?? '';
+          transaction.debitEntry?.accountDetail?.id ?? '';
       final String accountIdOfCreditEntry =
           transaction.creditEntry?.accountDetail?.id ?? '';
 
@@ -63,6 +66,19 @@ class TAccountSummaryDisplayWidget extends StatelessWidget {
     );
   }
 
+  List<Entry> getFilteredEntries(
+      String transactionType, List<Entry> entryList) {
+    List<Entry> filteredEntryList = [];
+
+    for (final entry in entryList) {
+      if (entry.transactionType == transactionType) {
+        filteredEntryList.add(entry);
+      }
+    }
+
+    return filteredEntryList;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,29 +87,78 @@ class TAccountSummaryDisplayWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Builder(builder: (context) {
-            final transactionSummaryList =
-                _getTransactionsSummaryOfAccount(accountId, transactionsList);
+            TransactionProvider transactionProvider =
+                Provider.of<TransactionProvider>(context, listen: false);
 
-            TextStyle columnHeaderTextStyle = const TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
+            return FutureBuilder(
+              future: transactionProvider.getAllEntriesByAccount(accountId),
+              builder: (ctx, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                List<Entry> accountEntryList = snapshot.data!;
+                List<Entry> debitEntryList =
+                    getFilteredEntries('Debit', accountEntryList);
+                List<Entry> creditEntryList =
+                    getFilteredEntries('Credit', accountEntryList);
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      children: [
+                        const Text(
+                          'Debit',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        ...debitEntryList
+                            .map(
+                              (entry) => Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 3.0),
+                                child: Text(
+                                  entry.amount.toString(),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const Text(
+                          'Credit',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        ...creditEntryList
+                            .map(
+                              (entry) => Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 3.0),
+                                child: Text(
+                                  entry.amount.toString(),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ],
+                    ),
+                  ],
+                );
+              },
             );
-
-            return Table(
-                border: TableBorder.all(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(3.0),
-                ),
-                children: [
-                  TableRow(children: [
-                    _generateCenterAlignedTextWidget(
-                        'Debit', columnHeaderTextStyle),
-                    _generateCenterAlignedTextWidget(
-                        'Credit', columnHeaderTextStyle),
-                  ]),
-                  ..._generateTransactionSummaryTableRowList(
-                      transactionSummaryList),
-                ]);
           }),
         ),
       ),

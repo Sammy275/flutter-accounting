@@ -36,7 +36,7 @@ class _DisplayAccountMainScreenState extends State<DisplayAccountMainScreen> {
 
     try {
       await NetworkRequestMaker.postJsonDataInRequest(
-          'accounts', postRequestDataBody);
+          'accounts/createAccount', postRequestDataBody);
     } catch (error) {
       print(error);
     }
@@ -56,24 +56,14 @@ class _DisplayAccountMainScreenState extends State<DisplayAccountMainScreen> {
 
   void _openTAccountDisplayWidget(
     String accountIdOfTappedTile,
-    List<Transaction> transactionList,
   ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ctx) => TAccountSummaryDisplayWidget(
           accountIdOfTappedTile,
-          transactionList,
         ),
       ),
     );
-  }
-
-  Future _initializeNecessaryData(
-    Future<dynamic> Function() loadAccounts,
-    Future<dynamic> Function() loadAllJournalEntries,
-  ) async {
-    await loadAccounts();
-    await loadAllJournalEntries();
   }
 
   @override
@@ -87,14 +77,9 @@ class _DisplayAccountMainScreenState extends State<DisplayAccountMainScreen> {
         child: Builder(builder: (context) {
           AccountProvider accountProvider =
               Provider.of<AccountProvider>(context, listen: false);
-          TransactionProvider transactionProvider =
-              Provider.of<TransactionProvider>(context, listen: false);
 
           return FutureBuilder(
-            future: _initializeNecessaryData(
-              accountProvider.loadAccountsFromServer,
-              transactionProvider.loadAllJournalEntriesFromServer,
-            ),
+            future: accountProvider.loadActiveAccountsFromServer(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting ||
                   snapshot.hasError) {
@@ -102,10 +87,8 @@ class _DisplayAccountMainScreenState extends State<DisplayAccountMainScreen> {
               }
 
               final accountsList = accountProvider.accountsList;
-              accountsList.sort((prevAccount, nextAccount) => prevAccount.accountType.compareTo(nextAccount.accountType));
-
-              final allTransactionsList =
-                  transactionProvider.allTransactionList;
+              accountsList.sort((prevAccount, nextAccount) =>
+                  prevAccount.accountType.compareTo(nextAccount.accountType));
 
               return ListView.builder(
                 itemCount: accountsList.length,
@@ -123,7 +106,6 @@ class _DisplayAccountMainScreenState extends State<DisplayAccountMainScreen> {
                     subtitle: Text(accountsList[index].accountType),
                     onTap: () => _openTAccountDisplayWidget(
                       accountsList[index].id,
-                      allTransactionsList,
                     ),
                   ),
                 ),

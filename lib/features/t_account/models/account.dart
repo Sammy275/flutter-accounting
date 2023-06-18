@@ -11,7 +11,7 @@ class Account {
 
   factory Account.fromMap(Map<String, dynamic> map) {
     return Account(
-      id: map['account_id'],
+      id: map['account_id'].toString(),
       accountName: map['account_name'],
       accountType: map['account_type'],
     );

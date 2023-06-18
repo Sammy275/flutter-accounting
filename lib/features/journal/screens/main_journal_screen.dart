@@ -33,10 +33,12 @@ class _MainJournalScreenState extends State<MainJournalScreen> {
         .map((transaction) => TableRow(children: [
               _generateCenterAlignedTextWidget(
                   transaction.transactionDate.toString()),
-              _generateCenterAlignedTextWidget(
-                  transaction.debitEntry!.accountDetail!.accountName.toString()),
-              _generateCenterAlignedTextWidget(
-                  transaction.creditEntry!.accountDetail!.accountName.toString()),
+              _generateCenterAlignedTextWidget(transaction
+                  .debitEntry!.accountDetail!.accountName
+                  .toString()),
+              _generateCenterAlignedTextWidget(transaction
+                  .creditEntry!.accountDetail!.accountName
+                  .toString()),
               _generateCenterAlignedTextWidget(
                   transaction.debitEntry!.amount.toString()),
             ]))
@@ -58,27 +60,20 @@ class _MainJournalScreenState extends State<MainJournalScreen> {
 
     final postRequestDataBody = json.encode({
       'description': '',
-      'debit': [
-        {
-          'transaction_type': 'Debit',
-          'account_id': debitAccountId,
-          'amount': amount,
-          'entry_type': debitEntryType,
-        },
-      ],
-      'credit': [
-        {
-          'transaction_type': 'Credit',
-          'account_id': creditAccountId,
-          'amount': amount,
-          'entry_type': creditEntryType,
-        },
-      ],
+      'amount': amount,
+      'debit': {
+        'account_id': debitAccountId,
+        'entry_type': debitEntryType,
+      },
+      'credit': {
+        'account_id': creditAccountId,
+        'entry_type': creditEntryType,
+      },
     });
 
     try {
       await NetworkRequestMaker.postJsonDataInRequest(
-          'journalEntry/create-entry', postRequestDataBody);
+          'journalEntry/create-transaction', postRequestDataBody);
     } catch (error) {
       print(error);
     }
@@ -91,7 +86,7 @@ class _MainJournalScreenState extends State<MainJournalScreen> {
   void _startTransactionEntryProcedure() async {
     final AccountProvider accountProvider =
         Provider.of<AccountProvider>(context, listen: false);
-    await accountProvider.loadAccountsFromServer();
+    await accountProvider.loadActiveAccountsFromServer();
     final accountsList = accountProvider.accountsList;
 
     showModalBottomSheet(

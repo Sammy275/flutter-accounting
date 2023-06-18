@@ -30,7 +30,7 @@ class NetworkRequestMaker {
     String jsonData,
   ) async {
     try {
-      final responseAfterPost = await http.post(
+      final response = await http.post(
         Uri.parse('$_baseURL$url'),
         body: jsonData,
         headers: <String, String>{
@@ -38,9 +38,12 @@ class NetworkRequestMaker {
         },
       );
 
-      if (responseAfterPost.statusCode == 200) {
+      if (response.statusCode != 200) {
         throw Exception('Could not post data');
       }
+
+      final parsedResponse = jsonDecode(response.body);
+      return parsedResponse;
     }
     catch (error) {
       throw Exception(error);

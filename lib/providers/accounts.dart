@@ -10,9 +10,9 @@ class AccountProvider extends ChangeNotifier {
     return [..._accountsList];
   }
 
-  Future loadAccountsFromServer() async {
+  Future loadActiveAccountsFromServer() async {
     try {
-      final accountsData = await NetworkRequestMaker.getResponseInJson('accounts/getAccounts') as List;
+      final accountsData = await NetworkRequestMaker.getResponseInJson('accounts/getActiveAccounts') as List;
       _accountsList = accountsData.map((accountJsonObject) => Account.fromMap(accountJsonObject)).toList();
 
       notifyListeners();
