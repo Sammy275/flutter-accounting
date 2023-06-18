@@ -71,7 +71,7 @@ class TAccountSummaryDisplayWidget extends StatelessWidget {
     List<Entry> filteredEntryList = [];
 
     for (final entry in entryList) {
-      if (entry.transactionType == transactionType) {
+      if (entry.transactionType.toLowerCase() == transactionType) {
         filteredEntryList.add(entry);
       }
     }
@@ -101,9 +101,9 @@ class TAccountSummaryDisplayWidget extends StatelessWidget {
 
                 List<Entry> accountEntryList = snapshot.data!;
                 List<Entry> debitEntryList =
-                    getFilteredEntries('Debit', accountEntryList);
+                    getFilteredEntries('debit', accountEntryList);
                 List<Entry> creditEntryList =
-                    getFilteredEntries('Credit', accountEntryList);
+                    getFilteredEntries('credit', accountEntryList);
 
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
