@@ -58,7 +58,7 @@ class IncomeStatementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Trial Balance')),
+      appBar: AppBar(title: const Text('Income Statement')),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FutureBuilder(

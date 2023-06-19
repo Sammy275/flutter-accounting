@@ -61,7 +61,7 @@ class BalanceSheetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Trial Balance')),
+      appBar: AppBar(title: const Text('Balance Sheet')),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FutureBuilder(

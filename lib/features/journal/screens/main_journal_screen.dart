@@ -31,8 +31,11 @@ class _MainJournalScreenState extends State<MainJournalScreen> {
 
     tableRowList = transactionList
         .map((transaction) => TableRow(children: [
-              _generateCenterAlignedTextWidget(
-                  transaction.transactionDate.toString()),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _generateCenterAlignedTextWidget(
+                    '${transaction.transactionDate.day}/${transaction.transactionDate.month}/${transaction.transactionDate.year} ${transaction.transactionDate.hour}:${transaction.transactionDate.minute}:${transaction.transactionDate.second}'),
+              ),
               _generateCenterAlignedTextWidget(transaction
                   .debitEntry!.accountDetail!.accountName
                   .toString()),
