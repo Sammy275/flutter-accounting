@@ -1,16 +1,9 @@
 # accounting_app
 
-A light weight front end application that connects with the backend accounting application.
+A lightweight front-end application that connects with the backend accounting application. This is a single-user Flutter and NojeJs-based application that enables you to perform basic accounting cycle steps.
 
-## Getting Started
+This application integrates with a NodeJs backend.
 
-This project is a starting point for a Flutter application.
+- [Here is the link to the repository](https://github.com/Sammy275/Accounting-backend)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Please make sure to install Mysql database server first!
